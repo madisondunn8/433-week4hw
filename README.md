@@ -48,16 +48,22 @@ flights %>%
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
-#You should fly earlier in the day because as the day goes on, average arrival delays increase. 
+#You should fly earlier in the day because as the day goes on, average arrival delays increase - therefore to find other variables that affect time of day, compare plots of different variables  
 
 flights %>%
-  filter(hour<12) %>% 
-  group_by(carrier) %>%
+  group_by(hour, carrier) %>%
   summarise(arr_delay = mean(arr_delay, na.rm = TRUE)) %>%
   arrange(arr_delay) %>% 
-  ggplot(aes(x = reorder(carrier, arr_delay), y = arr_delay)) +
-  geom_bar(stat='identity')
+  ggplot(aes(x=hour, y = arr_delay)) +
+  geom_point()+
+    facet_wrap(~carrier)+
+  ylim(NA,40) +
+  geom_hline(yintercept=0)
 ```
+
+    ## `summarise()` has grouped output by 'hour'. You can override using the `.groups` argument.
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
 
 ![](README_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
@@ -65,13 +71,19 @@ flights %>%
 #For flights in the first half of the day, avoid carrier OO, FL, and F9 as they tend to have higher delays, 
 
 flights %>%
-  filter(hour<12) %>% 
-  group_by(month) %>%
+  group_by(hour, month) %>%
   summarise(arr_delay = mean(arr_delay, na.rm = TRUE)) %>%
   arrange(arr_delay) %>% 
-  ggplot(aes(x=month,y=arr_delay)) +
-    geom_bar(stat='identity')
+  ggplot(aes(x=hour, y = arr_delay)) +
+  geom_jitter()+
+    facet_wrap(~month) +
+ scale_y_continuous() +
+    geom_hline(yintercept=0)
 ```
+
+    ## `summarise()` has grouped output by 'hour'. You can override using the `.groups` argument.
+
+    ## Warning: Removed 1 rows containing missing values (geom_point).
 
 ![](README_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
 
@@ -81,12 +93,12 @@ flights %>%
 
 left_join(flights, weather) %>%
   filter(hour<12) %>% 
-  group_by(wind_speed) %>%
-  summarise(arr_delay = mean(arr_delay, na.rm = TRUE)) %>%
+  group_by(visib) %>%
+  summarise(arr_delay = mean(arr_delay, na.rm = TRUE),avg_visib=mean(visib)) %>%
   arrange(arr_delay) %>% 
-  ggplot(aes(wind_speed, arr_delay)) +
+  ggplot(aes(avg_visib, arr_delay)) +
     geom_jitter() +
-    geom_smooth()
+    geom_smooth() 
 ```
 
     ## Joining, by = c("year", "month", "day", "origin", "hour", "time_hour")
@@ -100,5 +112,5 @@ left_join(flights, weather) %>%
 ![](README_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
 
 ``` r
-#Higher wind speed does appear to have an effect on arrival delays. As wind speed increases, average arrival delays appear to increase as well. Try to fly in the mornings when there is lower wind speed to avoid delays if possible. 
+#Higher average visibility appears to have a negative relationship with average arrival delays. As visibility increases, flights tend to have lower average arrival delays - this means that as visibility increases, average flight delays tend to decrease. Therefore, to avoid delays, fly in the mornings when visibility is high. 
 ```
