@@ -51,6 +51,7 @@ flights %>%
 #You should fly earlier in the day because as the day goes on, average arrival delays increase. 
 
 flights %>%
+  filter(hour<12) %>% 
   group_by(carrier) %>%
   summarise(arr_delay = mean(arr_delay, na.rm = TRUE)) %>%
   arrange(arr_delay) %>% 
@@ -61,7 +62,10 @@ flights %>%
 ![](README_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
 ``` r
+#For flights in the first half of the day, avoid carrier OO, FL, and F9 as they tend to have higher delays, 
+
 flights %>%
+  filter(hour<12) %>% 
   group_by(month) %>%
   summarise(arr_delay = mean(arr_delay, na.rm = TRUE)) %>%
   arrange(arr_delay) %>% 
@@ -72,7 +76,11 @@ flights %>%
 ![](README_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
 
 ``` r
+#For flights in the first half of the day, month also seems to have some kind of relationship. Flights around the holidays (November, December, January) seem to have more arrival delays than flights during the rest of the year. Therefore month of the year could affect delays - fly in the mornings not during the holiday months if possible to avoid delays. 
+
+
 left_join(flights, weather) %>%
+  filter(hour<12) %>% 
   group_by(wind_speed) %>%
   summarise(arr_delay = mean(arr_delay, na.rm = TRUE)) %>%
   arrange(arr_delay) %>% 
@@ -90,3 +98,7 @@ left_join(flights, weather) %>%
     ## Warning: Removed 1 rows containing missing values (geom_point).
 
 ![](README_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
+
+``` r
+#Higher wind speed does appear to have an effect on arrival delays. As wind speed increases, average arrival delays appear to increase as well. Try to fly in the mornings when there is lower wind speed to avoid delays if possible. 
+```
