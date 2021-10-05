@@ -3,6 +3,8 @@ week 4 hw
 Madison Dunn
 9/30/2021
 
+Github repo: <https://github.com/madisondunn8/433-week4hw>
+
 ``` r
 library(nycflights13)
 ```
